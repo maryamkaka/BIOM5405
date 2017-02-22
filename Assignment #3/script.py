@@ -5,6 +5,7 @@ import math
 import matplotlib.pyplot as plt
 import bisect
 from sklearn import metrics
+from sklearn import utils
 
 outputLocation = 'Assignment #3/images/'
 
@@ -29,6 +30,20 @@ def confusionMatrix(tp, fn, fp, tn):
     print(data)
 
     return data
+
+def bootstrap(data, nSamples):
+    stats = np.empty(nSamples)
+    for i in range(0, nSamples):
+        sample = utils.resample(data)
+        stats[i] = findPrecision(sample['class'], sample['score'])
+    np.sort(stats)
+    return [stats[math.floor(nSamples*0.025)], stats[math.ceil(nSamples*0.975)]]
+
+def findPrecision(c, s):
+    precision, recall, t = metrics.precision_recall_curve(c, s, pos_label=1)
+    points = np.array([[i, x] for i,x in enumerate(recall) if x >= 0.75])
+    points = points[np.argsort(points[:, 1])]
+    return precision[points[0][0]]
 
 print("QUESTION 1")
 col = ["TestT", "TestF"]
@@ -106,17 +121,22 @@ precision, recall, t = metrics.precision_recall_curve(data['class'],
     data['score'], pos_label=1)
 auc = metrics.auc(recall[1:-1], precision[1:-1])
 
-print('(v)')
-index = index = [i for i,x in enumerate(recall) if x == 0.75][0]
-print('Precision (@75'+ '%' +' Sensitivity): ' + str(precision[index]))
+print('(iv)')
+index = [i for i,x in enumerate(recall) if x == 0.75][0]
+print('Precision (@75'+ '%' +' Sensitivity): ' + str(findPrecision(data['class'],
+    data['score'])))
 
 plt.figure()
 plt.plot(recall[1:-1], precision[1:-1],
     label='Precision-Recall Curve (AUC = %0.2f)' %auc)
-plt.plot(recall[index], precision[index], marker='o', label='75% Sensitivity Point')
+plt.plot(recall[index], precision[index], marker='o',
+    label='75% Sensitivity Point')
 plt.title('Precision Recall Curve')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend(loc = 'lower right')
 plt.grid(True)
 plt.savefig(outputLocation + 'precision-recall2.png', bbox_inches='tight')
+
+print('(v)')
+print(bootstrap(data, 1000))
