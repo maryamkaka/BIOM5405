@@ -77,7 +77,6 @@ plt.legend(loc = 'lower left')
 plt.grid(True)
 plt.savefig(outputLocation + 'precision-recall.png', bbox_inches='tight')
 
-
 print('\nQUESTION 2')
 data = pd.read_csv("Assignment #3/assigData3.tsv", sep='\t', index_col=False,
     header=None, names=["score", "class"])
@@ -107,16 +106,17 @@ precision, recall, t = metrics.precision_recall_curve(data['class'],
     data['score'], pos_label=1)
 auc = metrics.auc(recall[1:-1], precision[1:-1])
 
+print('(v)')
+index = index = [i for i,x in enumerate(recall) if x == 0.75][0]
+print('Precision (@75'+ '%' +' Sensitivity): ' + str(precision[index]))
+
 plt.figure()
 plt.plot(recall[1:-1], precision[1:-1],
     label='Precision-Recall Curve (AUC = %0.2f)' %auc)
+plt.plot(recall[index], precision[index], marker='o', label='75% Sensitivity Point')
 plt.title('Precision Recall Curve')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend(loc = 'lower right')
 plt.grid(True)
 plt.savefig(outputLocation + 'precision-recall2.png', bbox_inches='tight')
-
-print('(v)')
-index = index = [i for i,x in enumerate(recall) if x == 0.75][0]
-print('Precision (@75'+ '%' +' Sensitivity): ' + str(precision[index]))
