@@ -39,3 +39,16 @@ print('(ii)')
 minSens = 0.75
 index = bisect.bisect_left(tpr, minSens)
 print('Max Specificity: ' + str(1-fpr[index]))
+
+print('(iii)')
+p, r, t = metrics.precision_recall_curve(data['class'], data['score'], pos_label=1)
+auc = metrics.auc(r[1:-1], p[1:-1])
+
+plt.figure()
+plt.plot(r[1:-1], p[1:-1], label='Precision-Recall Curve (AUC = %0.2f)' %auc)
+plt.title('Precision Recall Curve')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.legend(loc = 'lower right')
+plt.grid(True)
+plt.savefig(outputLocation + 'precision-recall.png', bbox_inches='tight')
