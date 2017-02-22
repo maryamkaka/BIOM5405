@@ -79,10 +79,12 @@ print('b. PPV: ' + str(PPVb))
 print('c. PPV: ' + str(PPVc))
 
 plt.figure()
-plt.plot(0.5, 0.5, marker='P', label='Random Classifier')
+plt.plot([0, 1],[0.5, 0.5], linestyle='dashed', label='Random Classifier A')
+plt.plot([0, 1],[100/1100, 100/1100], linestyle='dotted', label='Random Classifier B')
+plt.plot([0, 1],[0.5, 0.5], linestyle='dotted', label='Random Classifier C')
 plt.plot(SENS, PPVa, marker='o', label='a')
 plt.plot(SENS, PPVb, marker='s', label='b')
-plt.plot(SENS, PPVc, marker='x', label='c')
+plt.plot(SENS, PPVc, marker='P', label='c')
 plt.xlim([0, 1])
 plt.ylim([0, 1])
 plt.title('Precision Recall Curve')
@@ -139,4 +141,10 @@ plt.grid(True)
 plt.savefig(outputLocation + 'precision-recall2.png', bbox_inches='tight')
 
 print('(v)')
-print(bootstrap(data, 1000))
+print(bootstrap(data, 2000))
+
+print('(vi)')
+sens = 0.75
+prev = 0.001
+#ppv = (sens*prev)/((sens*prev) + ((1-)))
+print('Expected Precision: ' + str())
