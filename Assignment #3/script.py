@@ -144,7 +144,7 @@ print('(v)')
 print(bootstrap(data, 2000))
 
 print('(vi)')
-sens = 0.75
-prev = 0.001
-#ppv = (sens*prev)/((sens*prev) + ((1-)))
-print('Expected Precision: ' + str())
+modifiedSet = utils.resample(data[data['class'] == 0], n_samples=1000)
+modifiedSet = modifiedSet.append(data[data['class'] == 1][:1])
+print('Expected Precision: ' + str(findPrecision(modifiedSet['class'],
+    modifiedSet['score'])))
