@@ -40,7 +40,6 @@ print("D_grp outliers: \n" + str(outliers))
 print("Original: " + str(data.D_grp.describe()))
 print("No Outlier: " + str(data.D_grp[data.D_grp.index != outliers.index.values[0]].describe()))
 
-
 print('(c)')
 print('Min: ' + str(data['W_grp'].describe()['min']))
 print('Max: ' + str(data['W_grp'].describe()['max']))
