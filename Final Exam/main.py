@@ -4,7 +4,7 @@ import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy import stats
-from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_recall_curve, mean_squared_error
 from scipy.interpolate import UnivariateSpline
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -72,13 +72,26 @@ def q3(plots=False):
     if plots: plt.show()
 
     plt.figure()
+    plt.subplot(1, 3, 1)
     plt.scatter(salmon[0], salmon[1], label='Salmon')
     plt.scatter(trout[0], trout[1], c='b', marker='^', label='Trout')
     plt.xlabel('Feature 1')
     plt.ylabel('Feature 2')
-    plt.legend(loc='lower right')
-    plt.title('Plot of Data')
     plt.grid(True)
+    plt.subplot(1, 3, 2)
+    plt.title('Plot of Data')
+    plt.scatter(salmon[0], salmon[2], label='Salmon')
+    plt.scatter(trout[0], trout[2], c='b', marker='^', label='Trout')
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 3')
+    plt.grid(True)
+    plt.subplot(1, 3, 3)
+    plt.scatter(salmon[1], salmon[2], label='Salmon')
+    plt.scatter(trout[1], trout[2], c='b', marker='^', label='Trout')
+    plt.xlabel('Feature 2')
+    plt.ylabel('Feature 3')
+    plt.grid(True)
+    plt.legend(loc='lower right')
     if plots: plt.show()
 
     # set labels (Positive Class: Salmon; Negative Class: Trout)
@@ -88,20 +101,36 @@ def q3(plots=False):
     # finding means and cov
 
     # train classifier
-    x_train, x_test, y_train, y_test = train_test_split(
-        pd.concat([salmon[[0, 1, 2]], trout[[0,1,2]]]),
-        pd.concat([salmon[[3]], trout[[3]]]),
-        train_size=0.7,
-        random_state=42
-    )
-
+    x = pd.concat([salmon[[0, 1, 2]], trout[[0, 1, 2]]])
+    y = pd.concat([salmon[[3]], trout[[3]]])
     c = GaussianNB()
-    c.fit(x_train, y_train)
-    print('Baysian Classifier - Whitening Transform - Accuracy: ')
-    print(c.score(x_test, y_test))
+    c.fit(x, y)
+    print('1- Bayesian Classifier - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
 
-    # fixed classifier
-    salmon_t = PCA().fit_transform(salmon[[0,1,2]])
+    x = pd.concat([salmon[[1, 2]], trout[[1, 2]]])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('2- Bayesian Classifier + Remove F1 - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    x = pd.concat([salmon[[0, 2]], trout[[0, 2]]])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('3- Bayesian Classifier + Remove F2 - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    x = pd.concat([salmon[[0, 1]], trout[[0, 1]]])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('4- Bayesian Classifier + Remove F3 - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    # Bayesian Classifier + Whitening Transform
+    salmon_t = PCA().fit_transform(salmon[[0, 1, 2]])
     trout_t = PCA().fit_transform(trout[[0, 1, 2]])
 
     fig = plt.figure()
@@ -115,17 +144,13 @@ def q3(plots=False):
     ax.legend(loc='upper left')
     if plots: plt.show()
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        np.concatenate((salmon_t, trout_t)),
-        pd.concat([salmon[[3]], trout[[3]]]),
-        train_size=0.7,
-        random_state=42
-    )
+    x = np.concatenate((salmon_t, trout_t))
+    y = pd.concat([salmon[[3]], trout[[3]]])
 
     c = GaussianNB()
-    c.fit(x_train, y_train)
-    print('Fixed Baysian Classifier Accuracy: ')
-    print(c.score(x_test, y_test))
+    c.fit(x, y)
+    print('5 - Bayesian Classifier + Whitening Transform - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
 
 
 def main():
