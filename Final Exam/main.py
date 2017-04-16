@@ -6,7 +6,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy import stats
 from sklearn.metrics import precision_recall_curve, mean_squared_error
 from scipy.interpolate import UnivariateSpline
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import normalize
 from sklearn.decomposition import PCA
@@ -20,17 +19,19 @@ def q2c(n=1000, plot_pdf=False, prev_corrected=False):
     pos = np.random.normal(50, 5, n)
     neg = np.random.normal(60, 12, n)
 
+    pos = stats.norm(loc=50, scale=5)
+    neg = stats.norm(loc=60, scale=12)
+    x = np.linspace(0, 100, 1000)
+    plt.figure()
+    plt.title('PDF of Class Distributions')
+    plt.ylabel('Probability')
+    plt.grid(True)
+    plt.plot(x, pos.pdf(x))
+    plt.plot(x, neg.pdf(x))
     if plot_pdf:
-        pos = stats.norm(loc=50, scale=5)
-        neg = stats.norm(loc=60, scale=12)
-        x = np.linspace(0, 100, 1000)
-        plt.figure()
-        plt.title('PDF of Class Distributions')
-        plt.ylabel('Probability')
-        plt.grid(True)
-        plt.plot(x, pos.pdf(x))
-        plt.plot(x, neg.pdf(x))
+        plt.show()
         plt.savefig('2ci.png', bbox_inches='tight')
+
 
 
 def q3(plots=False):
@@ -51,8 +52,7 @@ def q3(plots=False):
     
     :param:
     plots: binary, default:False
-    
-    :return: 
+
     """
     salmon = pd.read_csv("final_Q3_data1.tsv", sep='\t', index_col=False,
                          header=None)
@@ -100,33 +100,59 @@ def q3(plots=False):
 
     # finding means and cov
 
-    # train classifier
+    # train classifiers
     x = pd.concat([salmon[[0, 1, 2]], trout[[0, 1, 2]]])
     y = pd.concat([salmon[[3]], trout[[3]]])
     c = GaussianNB()
     c.fit(x, y)
-    print('1- Bayesian Classifier - Error: ' +
+    print('1 - Bayesian Classifier - Error: ' +
           str(mean_squared_error(y, c.predict(x))))
 
     x = pd.concat([salmon[[1, 2]], trout[[1, 2]]])
     y = pd.concat([salmon[[3]], trout[[3]]])
     c = GaussianNB()
     c.fit(x, y)
-    print('2- Bayesian Classifier + Remove F1 - Error: ' +
+    print('2 - Bayesian Classifier + Remove F1 - Error: ' +
           str(mean_squared_error(y, c.predict(x))))
 
     x = pd.concat([salmon[[0, 2]], trout[[0, 2]]])
     y = pd.concat([salmon[[3]], trout[[3]]])
     c = GaussianNB()
     c.fit(x, y)
-    print('3- Bayesian Classifier + Remove F2 - Error: ' +
+    print('3 - Bayesian Classifier + Remove F2 - Error: ' +
           str(mean_squared_error(y, c.predict(x))))
 
     x = pd.concat([salmon[[0, 1]], trout[[0, 1]]])
     y = pd.concat([salmon[[3]], trout[[3]]])
     c = GaussianNB()
     c.fit(x, y)
-    print('4- Bayesian Classifier + Remove F3 - Error: ' +
+    print('4 - Bayesian Classifier + Remove F3 - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    # Normalization
+    x = np.concatenate([normalize(salmon[[0, 1, 2]]),
+                        normalize(trout[[0, 1, 2]])])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('5 - Bayesian Classifier + Normalization - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    # Normalization
+    x = np.concatenate([normalize(salmon[[2, 1]]),
+                        normalize(trout[[2, 1]])])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('6 - Bayesian Classifier + Normalization + Remove F1 - Error: ' +
+          str(mean_squared_error(y, c.predict(x))))
+
+    x = np.concatenate([normalize(salmon[[0, 1]]),
+                        normalize(trout[[0, 1]])])
+    y = pd.concat([salmon[[3]], trout[[3]]])
+    c = GaussianNB()
+    c.fit(x, y)
+    print('7 - Bayesian Classifier + Normalization + Remove F3 - Error: ' +
           str(mean_squared_error(y, c.predict(x))))
 
     # Bayesian Classifier + Whitening Transform
@@ -149,17 +175,17 @@ def q3(plots=False):
 
     c = GaussianNB()
     c.fit(x, y)
-    print('5 - Bayesian Classifier + Whitening Transform - Error: ' +
+    print('8 - Bayesian Classifier + Whitening Transform - Error: ' +
           str(mean_squared_error(y, c.predict(x))))
 
 
 def main():
     """ """
     print('  QUESTION 2:  ')
-    # q2c(plot_pdf=True)
+    q2c(plot_pdf=False)
 
     print('  QUESTION 3:  ')
-    q3(plots=True)
+    q3(plots=False)
 
 
 if __name__ == "__main__":
